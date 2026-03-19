@@ -21,6 +21,9 @@ class OrderCard extends StatefulWidget {
   /// Atanan kuryenin adı. null ise ID gösterilir.
   final String? courierName;
 
+  /// Siparişin geldiği işletmenin adı. null ise gösterilmez.
+  final String? workName;
+
   const OrderCard({
     super.key,
     required this.order,
@@ -28,6 +31,7 @@ class OrderCard extends StatefulWidget {
     required this.isAssigned,
     this.sequenceNumber,
     this.courierName,
+    this.workName,
   });
 
   @override
@@ -261,6 +265,13 @@ class _OrderCardState extends State<OrderCard>
                       ),
                     ],
                   ),
+                  // İşletme adı chip
+                  if (widget.workName != null &&
+                      widget.workName!.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    _buildWorkNameChip(),
+                  ],
+
                   const SizedBox(height: 8),
 
                   // Müşteri + Ödeme
@@ -690,6 +701,43 @@ class _OrderCardState extends State<OrderCard>
           ),
         ],
       ),
+    );
+  }
+
+  // ── İşletme adı chip ─────────────────────────────────────────────────────
+
+  Widget _buildWorkNameChip() {
+    const chipColor = Color(0xFF0369A1); // koyu mavi
+    const chipBg    = Color(0xFFE0F2FE); // açık mavi
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            color: chipBg,
+            borderRadius: BorderRadius.circular(7),
+            border: Border.all(color: chipColor.withAlpha(60)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.storefront_rounded,
+                  size: 12, color: chipColor),
+              const SizedBox(width: 4),
+              Text(
+                widget.workName!,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: chipColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

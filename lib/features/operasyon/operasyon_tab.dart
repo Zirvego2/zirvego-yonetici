@@ -34,6 +34,8 @@ class _OperasyonTabState extends State<OperasyonTab>
   final _assignedNotifier   = ValueNotifier<List<OrderModel>?>(null);
   final _sequenceMapNotifier  = ValueNotifier<Map<String, int>>({});
   final _courierNamesNotifier = ValueNotifier<Map<int, String>>({});
+  // workId → işletme adı (t_work, tek seferlik yüklenir)
+  final _workNamesNotifier    = ValueNotifier<Map<int, String>>({});
 
   // Stream abonelikleri
   // Tek bir stream (watchAllActiveOrders) ile hem atanmayan hem atanan
@@ -88,6 +90,13 @@ class _OperasyonTabState extends State<OperasyonTab>
         for (final c in couriers) c.sId: c.fullName,
       },
     );
+
+    // İşletme isimleri (tek seferlik yükle; t_work nadiren değişir)
+    _service.fetchWorkInfos(_bayId).then((infos) {
+      if (mounted) {
+        _workNamesNotifier.value = {for (final w in infos) w.id: w.name};
+      }
+    });
   }
 
   @override
@@ -100,6 +109,7 @@ class _OperasyonTabState extends State<OperasyonTab>
     _assignedNotifier.dispose();
     _sequenceMapNotifier.dispose();
     _courierNamesNotifier.dispose();
+    _workNamesNotifier.dispose();
     super.dispose();
   }
 
@@ -122,6 +132,7 @@ class _OperasyonTabState extends State<OperasyonTab>
                 ordersNotifier: _unassignedNotifier,
                 sequenceMapNotifier: _sequenceMapNotifier,
                 courierNamesNotifier: _courierNamesNotifier,
+                workNamesNotifier: _workNamesNotifier,
                 isAssigned: false,
                 bayId: _bayId,
                 emptyMessage: 'Atanmayan sipariş yok 🎉',
@@ -131,6 +142,7 @@ class _OperasyonTabState extends State<OperasyonTab>
                 ordersNotifier: _assignedNotifier,
                 sequenceMapNotifier: _sequenceMapNotifier,
                 courierNamesNotifier: _courierNamesNotifier,
+                workNamesNotifier: _workNamesNotifier,
                 isAssigned: true,
                 bayId: _bayId,
                 emptyMessage: 'Atanan sipariş yok',
@@ -345,6 +357,7 @@ class _OrderList extends StatefulWidget {
   final ValueNotifier<List<OrderModel>?> ordersNotifier;
   final ValueNotifier<Map<String, int>> sequenceMapNotifier;
   final ValueNotifier<Map<int, String>> courierNamesNotifier;
+  final ValueNotifier<Map<int, String>> workNamesNotifier;
   final bool isAssigned;
   final int bayId;
   final String emptyMessage;
@@ -354,6 +367,7 @@ class _OrderList extends StatefulWidget {
     required this.ordersNotifier,
     required this.sequenceMapNotifier,
     required this.courierNamesNotifier,
+    required this.workNamesNotifier,
     required this.isAssigned,
     required this.bayId,
     required this.emptyMessage,
@@ -368,6 +382,7 @@ class _OrderListState extends State<_OrderList> {
   List<OrderModel>? _orders;
   Map<String, int> _seqMap = {};
   Map<int, String> _courierNames = {};
+  Map<int, String> _workNames = {};
 
   @override
   void initState() {
@@ -376,11 +391,13 @@ class _OrderListState extends State<_OrderList> {
     _orders       = widget.ordersNotifier.value;
     _seqMap       = widget.sequenceMapNotifier.value;
     _courierNames = widget.courierNamesNotifier.value;
+    _workNames    = widget.workNamesNotifier.value;
 
     // Her notifier'a ayrı listener ekle → setState garantili
     widget.ordersNotifier.addListener(_onOrders);
     widget.sequenceMapNotifier.addListener(_onSeqMap);
     widget.courierNamesNotifier.addListener(_onCourierNames);
+    widget.workNamesNotifier.addListener(_onWorkNames);
   }
 
   @override
@@ -388,12 +405,14 @@ class _OrderListState extends State<_OrderList> {
     widget.ordersNotifier.removeListener(_onOrders);
     widget.sequenceMapNotifier.removeListener(_onSeqMap);
     widget.courierNamesNotifier.removeListener(_onCourierNames);
+    widget.workNamesNotifier.removeListener(_onWorkNames);
     super.dispose();
   }
 
   void _onOrders()       { if (mounted) setState(() => _orders       = widget.ordersNotifier.value); }
   void _onSeqMap()       { if (mounted) setState(() => _seqMap       = widget.sequenceMapNotifier.value); }
   void _onCourierNames() { if (mounted) setState(() => _courierNames = widget.courierNamesNotifier.value); }
+  void _onWorkNames()    { if (mounted) setState(() => _workNames    = widget.workNamesNotifier.value); }
 
   @override
   Widget build(BuildContext context) {
@@ -467,6 +486,7 @@ class _OrderListState extends State<_OrderList> {
             isAssigned: widget.isAssigned,
             sequenceNumber: _seqMap[order.docId],
             courierName: _courierNames[order.sCourier],
+            workName: _workNames[order.sWork],
             onTap: () => AssignCourierSheet.show(
               context,
               order: order,
