@@ -4,6 +4,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/routes/app_router.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/update_check_service.dart';
+import '../../shared/widgets/update_dialog.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -68,6 +70,22 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigate() async {
     await Future.delayed(const Duration(milliseconds: 2500));
     if (!mounted) return;
+
+    // ── Güncelleme kontrolü ───────────────────────────────────────────────
+    final updateResult = await UpdateCheckService.instance.checkForUpdate();
+
+    if (!mounted) return;
+
+    if (updateResult.needsUpdate) {
+      // Dialog zorunlu ise kullanıcı kapatamaz; isteğe bağlı ise erteleyebilir
+      await UpdateDialog.show(context, updateResult);
+      if (!mounted) return;
+
+      // Zorunlu güncellemede kullanıcı dialogu kapatamaz.
+      // "Sonra Hatırlat" ile kapatıldıysa devam et.
+      if (updateResult.isForced) return; // Ekranı kilitle, devam etme
+    }
+    // ─────────────────────────────────────────────────────────────────────
 
     if (AuthService.instance.isLoggedIn) {
       context.go(AppRoutes.dashboard);
