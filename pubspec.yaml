@@ -2,7 +2,7 @@ name: zirvego_yonetici
 description: "ZirveGo Yönetici Uygulaması - Kurumsal Yönetim Paneli"
 publish_to: 'none'
 
-version: 2.1.2+1
+version: 2.1.2+3
 
 environment:
   sdk: ^3.9.2
