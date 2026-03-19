@@ -658,7 +658,8 @@ class OperationService {
         } else if (locData is GeoPoint) {
           geoPoint = locData;
         }
-        if (geoPoint != null && name.isNotEmpty) {
+        // Adı olan her işletmeyi ekle (konum olmasa da sipariş kartında gösterilir)
+        if (name.isNotEmpty) {
           result.add(WorkInfo(id: id, name: name, location: geoPoint));
         }
       }
@@ -1064,16 +1065,18 @@ class DailyDeliveryStats {
   });
 }
 
-/// İşletme bilgisi (harita marker'ları için)
+/// İşletme bilgisi (harita marker'ları + sipariş kartı adı için)
 class WorkInfo {
   final int id;
   final String name;
-  final GeoPoint location;
+
+  /// Konum bilgisi. Harita için gereklidir; sipariş kartında kullanılmaz.
+  final GeoPoint? location;
 
   const WorkInfo({
     required this.id,
     required this.name,
-    required this.location,
+    this.location,
   });
 }
 

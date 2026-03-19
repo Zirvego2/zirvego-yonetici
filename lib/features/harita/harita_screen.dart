@@ -236,13 +236,14 @@ class _HaritaScreenState extends State<HaritaScreen> {
       } catch (_) {}
     }
 
-    // İşletme marker'ları
+    // İşletme marker'ları (konumu olmayan işletmeler haritada gösterilmez)
     for (final w in _works) {
+      if (w.location == null) continue;
       try {
         final icon = await _workIcon(w.name);
         newMarkers.add(Marker(
           markerId: MarkerId('w_${w.id}'),
-          position: LatLng(w.location.latitude, w.location.longitude),
+          position: LatLng(w.location!.latitude, w.location!.longitude),
           icon: icon,
           anchor: const Offset(0.5, 1.0),
         ));
@@ -492,8 +493,12 @@ class _HaritaScreenState extends State<HaritaScreen> {
   LatLng get _initPos {
     final gp = AuthService.instance.currentUser?.sLoc.ssLocationGeoPoint;
     if (gp != null) return LatLng(gp.latitude, gp.longitude);
-    if (_works.isNotEmpty) {
-      return LatLng(_works.first.location.latitude, _works.first.location.longitude);
+    final firstWithLoc = _works.firstWhere(
+      (w) => w.location != null,
+      orElse: () => const WorkInfo(id: 0, name: ''),
+    );
+    if (firstWithLoc.location != null) {
+      return LatLng(firstWithLoc.location!.latitude, firstWithLoc.location!.longitude);
     }
     return const LatLng(39.9334, 32.8597); // Ankara
   }
