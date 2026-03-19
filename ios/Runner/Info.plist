@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Konum İzinleri (google_maps_flutter) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Harita üzerinde konumunuzu göstermek ve kurye takibi yapabilmek için konum erişimi gereklidir.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Kurye takibi ve rota hesaplama için arka planda konum erişimi gereklidir.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Kurye takibi ve rota hesaplama için arka planda konum erişimi gereklidir.</string>
+
+	<!-- Kamera ve Galeri İzinleri (image_picker) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Profil fotoğrafı veya belge yüklemek için kamera erişimi gereklidir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil fotoğrafı veya belge seçmek için galeri erişimi gereklidir.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Fotoğraf kaydetmek için galeri erişimi gereklidir.</string>
 </dict>
 </plist>
