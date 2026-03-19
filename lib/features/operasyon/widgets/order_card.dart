@@ -228,6 +228,13 @@ class _OrderCardState extends State<OrderCard>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // İşletme adı chip (ID'nin üzerinde)
+                  if (widget.workName != null &&
+                      widget.workName!.isNotEmpty) ...[
+                    _buildWorkNameChip(),
+                    const SizedBox(height: 6),
+                  ],
+
                   // Adres + sipariş ID
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,12 +272,6 @@ class _OrderCardState extends State<OrderCard>
                       ),
                     ],
                   ),
-                  // İşletme adı chip
-                  if (widget.workName != null &&
-                      widget.workName!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    _buildWorkNameChip(),
-                  ],
 
                   const SizedBox(height: 8),
 

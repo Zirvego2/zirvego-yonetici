@@ -647,9 +647,12 @@ class OperationService {
       for (final doc in snap.docs) {
         final data = doc.data();
         final id = (data['s_id'] as num?)?.toInt() ?? 0;
-        final name = (data['s_info'] as Map<String, dynamic>?)?['ss_name']
-                as String? ??
-            '';
+        // t_work'te işletme adı önce 's_name' alanında, alternatif 's_info.ss_name'
+        final name = (data['s_name'] as String?)?.trim().isNotEmpty == true
+            ? (data['s_name'] as String).trim()
+            : ((data['s_info'] as Map<String, dynamic>?)?['ss_name'] as String?)
+                    ?.trim() ??
+                '';
         final locData = data['s_loc'];
         GeoPoint? geoPoint;
         if (locData is Map) {
